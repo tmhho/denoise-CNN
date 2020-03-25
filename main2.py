@@ -140,7 +140,7 @@ out_train = model.fit(y_train_ext, x_train_ext,
           verbose=1,
           validation_data=(y_test_ext, x_test_ext))
 
-model.save('model_loss')  # Pour enregistrer le réseau model
+model.save('model_loss.h5')  # Pour enregistrer le réseau model
 
 # model = load_model('model.h5') # Pour charger le réseau model
 
