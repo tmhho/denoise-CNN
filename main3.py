@@ -98,8 +98,10 @@ def model_simple():
 # Version visuelle des convolutions! http://cs231n.github.io/assets/conv-demo/index.html
   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(init) 
   x = MaxPooling2D((2, 2))(x)
+  x = Dropout(0.5)(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x) 
   x = MaxPooling2D((2, 2))(x)
+  x = Dropout(0.5)(x)
   x = Convolution2D(64, (3, 3), activation='relu', padding='same')(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
   #x = UpSampling2D()(x)
@@ -110,6 +112,7 @@ def model_simple():
   x = Convolution2D(1, (3, 3), activation='relu', padding='same')(x) # permet d'avoir une image noir et blanc en sortie
 
   # Autres fonctions potentiellement utiles:
+  #x = UpSampling2D()(x)
   # x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
   # x = concatenate([x1, x2])
   # x = Dropout(0.5)(x)
@@ -140,7 +143,7 @@ out_train = model.fit(y_train_ext, x_train_ext,
           verbose=1,
           validation_data=(y_test_ext, x_test_ext))
 
-model.save('model_loss.h5')  # Pour enregistrer le réseau model
+model.save('model3_loss.h5')  # Pour enregistrer le réseau model
 
 # model = load_model('model.h5') # Pour charger le réseau model
 
@@ -151,6 +154,11 @@ predictions = model.predict(y_test_ext)
 score = model.evaluate(y_test_ext, x_test_ext, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
+
+#Save info of this model
+f=open("model3_info.txt", "w")
+f.write("Model 3: Convo + Maxpooling + Dropout + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
+f.close()
 
 loss_train = out_train.history['loss']
 loss_test = out_train.history['val_loss']
@@ -188,12 +196,17 @@ def SNR(x_ref,x):
   res=-20*np.log10(np.linalg.norm(x_ref_vect-x_vect)/np.linalg.norm(x_vect)+1e-15)
   return res
 
-print("Signal to Noise ratio: %2f ", SNR (x_train, y_train))
+#print("Signal to Noise ratio: %2f", SNR (x_test, y_test))
+
+#Append SNR output to a file to compare SNR of all models
+def Append(data, file_name, model_number):
+  f=open(file_name, "a+")
+  f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
+  f.close()
+  
+Append(SNR(x_test, y_test), comparasion.txt, 3)
 
 
-
-#ll = [10000, 20000, 30000, 40000, 50000, 60000]
-
-#for l in ll:
+  
   
   

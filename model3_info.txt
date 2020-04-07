@@ -1,0 +1,1 @@
+Model 3: Convo + Maxpooling + Dropout + ConvoTranspose => Test lost: 3.345670   Test accuracy: 4.566780 
