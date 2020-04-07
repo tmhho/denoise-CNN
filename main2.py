@@ -152,6 +152,11 @@ score = model.evaluate(y_test_ext, x_test_ext, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
+#Save info of this model
+f=open("model2_info.txt", "w")
+f.write("Model 3: Convo + Maxpooling + Dropout + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
+f.close()
+
 loss_train = out_train.history['loss']
 loss_test = out_train.history['val_loss']
 # mse_train = out_train.history['mse']
@@ -188,12 +193,14 @@ def SNR(x_ref,x):
   res=-20*np.log10(np.linalg.norm(x_ref_vect-x_vect)/np.linalg.norm(x_vect)+1e-15)
   return res
 
-print("Signal to Noise ratio: %2f ", SNR (x_train, y_train))
-
-
-
-#ll = [10000, 20000, 30000, 40000, 50000, 60000]
-
-#for l in ll:
   
+#Append SNR output to a file to compare SNR of all models
+def Append(data, file_name, model_number):
+  f=open(file_name, "a+")
+  f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
+  f.close()
+  
+Append(SNR(x_test, y_test), comparasion.txt, 3)
+
+
   
