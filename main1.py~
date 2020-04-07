@@ -154,7 +154,7 @@ print('Test accuracy:', score[1])
 
 #Save info of this model
 f=open("model2_info.txt", "w")
-f.write("Model 2: Convo + Maxpooling + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
+f.write("Model 3: Convo + Maxpooling + Dropout + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
 f.close()
 
 loss_train = out_train.history['loss']
@@ -200,7 +200,7 @@ def Append(data, file_name, model_number):
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test, y_test), comparasion.txt, 2)
+Append(SNR(x_test, y_test), comparasion.txt, 3)
 
 
   

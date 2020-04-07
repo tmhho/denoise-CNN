@@ -102,11 +102,11 @@ def model_simple():
   x = MaxPooling2D((2, 2))(x)
   x = Convolution2D(64, (3, 3), activation='relu', padding='same')(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
-  #x = UpSampling2D()(x)
-  x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
+  x = UpSampling2D()(x)
+  #x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(x)
-  #x = UpSampling2D()(x)
-  x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
+  x = UpSampling2D()(x)
+  #x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
   x = Convolution2D(1, (3, 3), activation='relu', padding='same')(x) # permet d'avoir une image noir et blanc en sortie
 
   # Autres fonctions potentiellement utiles:
@@ -140,7 +140,7 @@ out_train = model.fit(y_train_ext, x_train_ext,
           verbose=1,
           validation_data=(y_test_ext, x_test_ext))
 
-model.save('model2.h5')  # Pour enregistrer le réseau model
+model.save('model1.h5')  # Pour enregistrer le réseau model
 
 # model = load_model('model.h5') # Pour charger le réseau model
 
@@ -153,8 +153,8 @@ print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
 #Save info of this model
-f=open("model2_info.txt", "w")
-f.write("Model 2: Convo + Maxpooling + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
+f=open("model1_info.txt", "w")
+f.write("Model 1: Convo + Maxpooling + UpSampling => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
 f.close()
 
 loss_train = out_train.history['loss']
@@ -200,7 +200,7 @@ def Append(data, file_name, model_number):
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test, y_test), comparasion.txt, 2)
+Append(SNR(x_test, y_test), comparasion.txt, 1)
 
 
   
