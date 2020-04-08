@@ -19,13 +19,14 @@ from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import concatenate, Add
 from keras.models import Model
 from keras import optimizers, losses
+from keras.models import load_model 
 
 import numpy as np
 import matplotlib.pyplot as plt          
 
 # Commenter à l'INSA
-#import os
-#os.environ["CUDA_VISIBLE_DEVICES"]="0"
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 
 ## Load data
@@ -84,7 +85,8 @@ for i in range(1, col+1):
   # Position = i+ col 
   fig.add_subplot(2, col, i+col)
   plt.imshow(y_train[i],interpolation='nearest')
-plt.show()
+#plt.show()
+plt.savefig('fig_1.png')
 
 # Mettre donnees en forme pour passer dans le réseau
 x_train_ext = np.expand_dims(x_train,3) # ajoute une dimension a x_train à la position 3
@@ -166,7 +168,8 @@ plt.plot(loss_train,label='training')
 plt.plot(loss_test,label='validation')
 plt.title('Loss')
 plt.legend()
-plt.show()
+#plt.show()
+plt.savefig('loss_1.png')
 
 # Afficher quelques images
 
@@ -184,8 +187,8 @@ for i in range(1, col+1):
   plt.imshow(x_test[i],interpolation='nearest')
   fig.add_subplot(rows, col, i+2*col)
   plt.imshow(y_test[i],interpolation='nearest')
-plt.show()
-
+#plt.show()
+plt.savefig('final_1.png')
 
 def SNR(x_ref,x):
   x_ref_vect = x_ref.flatten()
@@ -200,7 +203,7 @@ def Append(data, file_name, model_number):
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test, y_test), comparasion.txt, 1)
+Append(SNR(x_test, y_test), 'comparasion1.txt', 1)
 
 
   
