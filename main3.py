@@ -1,4 +1,4 @@
-# Lancer cette cette commande dans le terminal avant de lancer vos scripts python,
+1# Lancer cette cette commande dans le terminal avant de lancer vos scripts python,
 # cela permets d'utiliser le GPU (carte graphique):
 # source activate GPU
 #
@@ -205,7 +205,7 @@ def Append(data, file_name, model_number):
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test, y_test), comparasion.txt, 3)
+Append(SNR(x_test, y_test), "comparasion.txt" , 3)
 
 
   

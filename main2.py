@@ -200,7 +200,7 @@ def Append(data, file_name, model_number):
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test, y_test), comparasion.txt, 2)
+Append(SNR(x_test, y_test), "comparasion.txt" , 2)
 
 
   

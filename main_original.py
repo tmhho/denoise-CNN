@@ -5,15 +5,15 @@
 # Lancer ensuite vos code avec: python main_incomplet.py
 #
 # Ou alors lancer un terminal Python avec: ipython
-# puis lancer votre script avibec: run main_incomplet.py
+# puis lancer votre script avec: run main_incomplet.py
 # Cela vous permettra de debeuger et de taper vos commandes sans avoir
 # a relancer tout le script.
 
 
-# Lrairies pour réseau de neurones
+# Librairies pour réseau de neurones
 from keras.datasets import mnist # hand written digits
 from keras.layers import Input, Activation
-from keras.layers.core import Dropout, Lambda, SpatialDropout2D
+from keras.layers.core import Dropout, Lambda
 from keras.layers.convolutional import Conv2D, Conv2DTranspose, UpSampling2D, Convolution2D
 from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import concatenate, Add
@@ -24,22 +24,19 @@ import numpy as np
 import matplotlib.pyplot as plt          
 
 # Commenter à l'INSA
-#import os
-#os.environ["CUDA_VISIBLE_DEVICES"]="0"
-
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 ## Load data
 # On recupere les images
 # x: Matrices de taille 28x28 avec des valeurs de 0 à 255.
 # y: chiffre auquel correspond l'image. On utilise pas y ici.
-
 (x_train, _), (x_test, _) = mnist.load_data()
 
-x_train = x_train[:30000]
-# Degradation
 
-sigma_noise = 30
-sigma_flou = 2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
+# Degradation
+sigma_noise=30
+sigma_flou=2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
 
 # ### Choisir entre l'ajout de bruit et l'ajout de flou
 # # On ajoute un flou stationaire et du bruit gaussien
@@ -59,31 +56,24 @@ sigma_flou = 2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
 # for k in range(x_test.shape[0]):
 #     y_test[k]=np.fft.ifft2(np.fft.fft2(x_test[k])*Ghat)+sigma_noise*np.random.randn(n1,n2) 
 
-# Inpainting
-#tmp = x_train.copy()
-#tmp[:,10:20,:]=0
-#y_train = tmp + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
-#tmp = x_test.copy()
-#tmp[:,10:20,:]=0
-#y_test = tmp + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
+# # Inpainting
+# tmp = x_train.copy()
+# tmp[:,12:18,:]=0
+# y_train = tmp + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
+# tmp = x_test.copy()
+# tmp[:,12:18,:]=0
+# y_test = tmp + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
 
 # On ajoute du bruit gaussien
-
 y_train = x_train + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
 y_test = x_test + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
 
 # Afficher quelques images
-# DONE: afficher plusieurs images sur la même figure (utiliser subplot)
-fig = plt.figure(1)
-col = 10 #Number of colmuns
-for i in range(1, col+1):
-  # Number of rows = 2
-  # Position = i 
-  fig.add_subplot(2, col, i)
-  plt.imshow(x_train[i],interpolation='nearest')
-  # Position = i+ col 
-  fig.add_subplot(2, col, i+col)
-  plt.imshow(y_train[i],interpolation='nearest')
+# TODO: afficher plusieurs images sur la même figure (utiliser subplot)
+plt.figure(1)
+plt.imshow(x_train[0],interpolation='nearest')
+plt.figure(2)
+plt.imshow(y_train[0],interpolation='nearest')
 plt.show()
 
 # Mettre donnees en forme pour passer dans le réseau
@@ -92,25 +82,22 @@ y_train_ext = np.expand_dims(y_train,3)
 x_test_ext = np.expand_dims(x_test,3)  
 y_test_ext = np.expand_dims(y_test,3) 
 
-# Roughly DONE: comprendre chaque fonctions
+# TODO: comprendre chaque fonctions
 def model_simple():
   init = Input(shape=(None, None,1)) # une image noir et blanc de taille non détérminée
 # Version visuelle des convolutions! http://cs231n.github.io/assets/conv-demo/index.html
-  x = Convolution2D(16, (3, 3), activation='relu', padding='same')(init)
-  x = SpatialDropout2D(0.5)()
+  x = Convolution2D(16, (3, 3), activation='relu', padding='same')(init) 
   x = MaxPooling2D((2, 2))(x)
-  x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
-  x = SpatialDropout2D(0.5)()
+  x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x) 
   x = MaxPooling2D((2, 2))(x)
   x = Convolution2D(64, (3, 3), activation='relu', padding='same')(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
-  x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
+  x = UpSampling2D()(x)
   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(x)
-  x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
+  x = UpSampling2D()(x)
   x = Convolution2D(1, (3, 3), activation='relu', padding='same')(x) # permet d'avoir une image noir et blanc en sortie
 
   # Autres fonctions potentiellement utiles:
-  # x = UpSampling2D()(x)
   # x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
   # x = concatenate([x1, x2])
   # x = Dropout(0.5)(x)
@@ -123,7 +110,7 @@ model = model_simple() # charge le modele
 model.summary() # affiche les proprietes du modele
 
 # autres fonctions cout existent: binary_crossentropy,... https://keras.io/losses/
-loss = losses.binary_crossentropy
+loss = losses.mse
 # autres techniques d'optimisation existent: sgd, adagrad,... https://keras.io/optimizers/
 optim = optimizers.Adam()
 # Compile le modele
@@ -141,23 +128,12 @@ out_train = model.fit(y_train_ext, x_train_ext,
           verbose=1,
           validation_data=(y_test_ext, x_test_ext))
 
-model.save('model3.h5')  # Pour enregistrer le réseau model
-
-
+model.save('model.h5')  # Pour enregistrer le réseau model
 # model = load_model('model.h5') # Pour charger le réseau model
-
-# DONE: evaluer le réseau sur la partie test du jeu de données (pourquoi jamais sur le train?), 
-# utiliser la fonction 'predict' pour faire obtenir la sortie du réseau de neurone (model.predict)
-predictions = model.predict(y_test_ext)
 
 score = model.evaluate(y_test_ext, x_test_ext, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
-
-#Save info of this model
-f=open("model4_info.txt", "w")
-f.write("Model 4: Convo +Spatial Dropout + Maxpooling + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
-f.close()
 
 loss_train = out_train.history['loss']
 loss_test = out_train.history['val_loss']
@@ -171,41 +147,6 @@ plt.legend()
 plt.show()
 
 # Afficher quelques images
-
-# DONE: afficher les resultats sur la meme figure comme au debut
-fig = plt.figure(1)
-col = 10
-rows = 3
-for i in range(1, col+1):
-  # Number of rows = 2
-  # Position = i 
-  fig.add_subplot(rows, col, i)
-  plt.imshow(np.squeeze(predictions[i], axis=(2,)),interpolation='nearest')
-  # Position = i+ col 
-  fig.add_subplot(rows, col, i+col)
-  plt.imshow(x_test[i],interpolation='nearest')
-  fig.add_subplot(rows, col, i+2*col)
-  plt.imshow(y_test[i],interpolation='nearest')
-plt.show()
-
-
-def SNR(x_ref,x):
-  x_ref_vect = x_ref.flatten()
-  x_vect = x.flatten()
-  res=-20*np.log10(np.linalg.norm(x_ref_vect-x_vect)/np.linalg.norm(x_vect)+1e-15)
-  return res
-
-#print("Signal to Noise ratio: %2f", SNR (x_test, y_test))
-
-#Append SNR output to a file to compare SNR of all models
-def Append(data, file_name, model_number):
-  f=open(file_name, "a+")
-  f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
-  f.close()
-  
-Append(SNR(x_test, y_test), "comparasion.txt" , 4)
-
-
-  
-  
-  
+# TODO: evaluer le réseau sur la partie test du jeu de données (pourquoi jamais sur le train?), 
+# utiliser la fonction 'predict' pour faire obtenir la sortie du réseau de neurone (model.predict)
+# TODO: afficher les resultats sur la meme figure comme au debut
