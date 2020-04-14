@@ -57,16 +57,16 @@ sigma_flou=2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
 #     y_test[k]=np.fft.ifft2(np.fft.fft2(x_test[k])*Ghat)+sigma_noise*np.random.randn(n1,n2) 
 
 # # Inpainting
-# tmp = x_train.copy()
-# tmp[:,12:18,:]=0
-# y_train = tmp + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
-# tmp = x_test.copy()
-# tmp[:,12:18,:]=0
-# y_test = tmp + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
+tmp = x_train.copy()
+tmp[:,12:18,:]=0
+y_train = tmp + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
+tmp = x_test.copy()
+tmp[:,12:18,:]=0
+y_test = tmp + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
 
 # On ajoute du bruit gaussien
-y_train = x_train + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
-y_test = x_test + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
+#y_train = x_train + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
+#y_test = x_test + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
 
 # Afficher quelques images
 # TODO: afficher plusieurs images sur la même figure (utiliser subplot)

@@ -1,4 +1,4 @@
-1# Lancer cette cette commande dans le terminal avant de lancer vos scripts python,
+# Lancer cette cette commande dans le terminal avant de lancer vos scripts python,
 # cela permets d'utiliser le GPU (carte graphique):
 # source activate GPU
 #
@@ -19,6 +19,7 @@ from keras.layers.pooling import MaxPooling2D
 from keras.layers.merge import concatenate, Add
 from keras.models import Model
 from keras import optimizers, losses
+from keras.models import load_model 
 
 import numpy as np
 import matplotlib.pyplot as plt          
@@ -35,10 +36,10 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 (x_train, _), (x_test, _) = mnist.load_data()
 
-x_train = x_train[:30000]
+
 # Degradation
 
-sigma_noise = 30
+sigma_noise = 90
 sigma_flou = 2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
 
 # ### Choisir entre l'ajout de bruit et l'ajout de flou
@@ -73,7 +74,6 @@ y_train = x_train + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1
 y_test = x_test + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
 
 # Afficher quelques images
-# DONE: afficher plusieurs images sur la même figure (utiliser subplot)
 fig = plt.figure(1)
 col = 10 #Number of colmuns
 for i in range(1, col+1):
@@ -85,7 +85,7 @@ for i in range(1, col+1):
   fig.add_subplot(2, col, i+col)
   plt.imshow(y_train[i],interpolation='nearest')
 #plt.show()
-plt.savefig('fig_3.png')
+plt.savefig('fig_1.png')
 
 # Mettre donnees en forme pour passer dans le réseau
 x_train_ext = np.expand_dims(x_train,3) # ajoute une dimension a x_train à la position 3
@@ -99,21 +99,16 @@ def model_simple():
 # Version visuelle des convolutions! http://cs231n.github.io/assets/conv-demo/index.html
   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(init) 
   x = MaxPooling2D((2, 2))(x)
-  x = Dropout(0.5)(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x) 
   x = MaxPooling2D((2, 2))(x)
-  x = Dropout(0.5)(x)
   x = Convolution2D(64, (3, 3), activation='relu', padding='same')(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
-  #x = UpSampling2D()(x)
-  x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
+  x = UpSampling2D()(x)
   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(x)
-  #x = UpSampling2D()(x)
-  x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
+  x = UpSampling2D()(x)
   x = Convolution2D(1, (3, 3), activation='relu', padding='same')(x) # permet d'avoir une image noir et blanc en sortie
 
   # Autres fonctions potentiellement utiles:
-  #x = UpSampling2D()(x)
   # x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
   # x = concatenate([x1, x2])
   # x = Dropout(0.5)(x)
@@ -144,8 +139,7 @@ out_train = model.fit(y_train_ext, x_train_ext,
           verbose=1,
           validation_data=(y_test_ext, x_test_ext))
 
-model.save('model3.h5')  # Pour enregistrer le réseau model
-
+model.save('model1.h5')  # Pour enregistrer le réseau model
 
 # model = load_model('model.h5') # Pour charger le réseau model
 
@@ -158,13 +152,18 @@ print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
 #Save info of this model
-f=open("model3_info.txt", "w")
-f.write("Model 3: Convo + Maxpooling + Dropout + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
-f.close()
+#f=open("model1_info.txt", "w")
+#f.write(model.summary())
+#f.write("Model 1: Convo + Maxpooling + UpSampling => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
+#f.close()
+
+with open('model1.txt','w') as fh:
+    # Pass the file handle in as a lambda function to make it callable
+    model.summary(print_fn=lambda x: fh.write(x + '\n'))
 
 loss_train = out_train.history['loss']
 loss_test = out_train.history['val_loss']
-# mse_train = out_train.history['mse']
+mse_train = out_train.history['mse']
 
 plt.figure(2)
 plt.plot(loss_train,label='training')
@@ -172,16 +171,15 @@ plt.plot(loss_test,label='validation')
 plt.title('Loss')
 plt.legend()
 #plt.show()
-plt.savefig('loss_3.png')
+plt.savefig('loss_1.png')
 
 # Afficher quelques images
 
 # DONE: afficher les resultats sur la meme figure comme au debut
-fig = plt.figure(1)
+fig = plt.figure(3)
 col = 10
 rows = 3
 for i in range(1, col+1):
-  # Number of rows = 2
   # Position = i 
   fig.add_subplot(rows, col, i)
   plt.imshow(np.squeeze(predictions[i], axis=(2,)),interpolation='nearest')
@@ -191,7 +189,7 @@ for i in range(1, col+1):
   fig.add_subplot(rows, col, i+2*col)
   plt.imshow(y_test[i],interpolation='nearest')
 #plt.show()
-plt.savefig('final_3.png')
+plt.savefig('final_1.png')
 
 def SNR(x_ref,x):
   x_ref_vect = x_ref.flatten()
@@ -199,17 +197,14 @@ def SNR(x_ref,x):
   res=-20*np.log10(np.linalg.norm(x_ref_vect-x_vect)/np.linalg.norm(x_vect)+1e-15)
   return res
 
-#print("Signal to Noise ratio: %2f", SNR (x_test, y_test))
-
+  
 #Append SNR output to a file to compare SNR of all models
 def Append(data, file_name, model_number):
   f=open(file_name, "a+")
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test, y_test), 'comparasion3.txt', 3)
+Append(SNR(x_test, y_test), 'SNR.txt', 1)
 
 
-  
-  
   

@@ -1,0 +1,1 @@
+Signal to Noise ratio of model 1 is : -0.473144 

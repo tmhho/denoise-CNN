@@ -1,1 +1,0 @@
-Model 1: Convo + Maxpooling + UpSampling => Test lost: 521.227896   Test accuracy: 7410.123535 
