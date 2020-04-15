@@ -141,8 +141,7 @@ y_test_ext = np.expand_dims(y_test,3)
 
 # model.save('model1.h5')  # Pour enregistrer le réseau model
 
-model = load_model('model1.h5') # Pour charger le réseau model
-
+model = load_model('model1.h5') # Pour charger le réseau mod
 # DONE: evaluer le réseau sur la partie test du jeu de données (pourquoi jamais sur le train?), 
 # utiliser la fonction 'predict' pour faire obtenir la sortie du réseau de neurone (model.predict)
 predictions = model.predict(y_test_ext)
@@ -204,7 +203,7 @@ def Append(data, file_name, model_number):
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test, np.squeeze(predictions, axis=(2,))), 'SNR.txt', 1)
+Append(SNR(x_test, np.squeeze(predictions)), 'SNR.txt', 1)
 
 
   
