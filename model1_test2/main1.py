@@ -120,15 +120,18 @@ y_test_ext = np.expand_dims(y_test,3)
 # model = model_simple() # charge le modele
 # model.summary() # affiche les proprietes du modele
 
-# autres fonctions cout existent: binary_crossentropy,... https://keras.io/losses/
+# # autres fonctions cout existent: binary_crossentropy,... https://keras.io/losses/
 # loss = losses.mse
-# autres techniques d'optimisation existent: sgd, adagrad,... https://keras.io/optimizers/
+# # autres techniques d'optimisation existent: sgd, adagrad,... https://keras.io/optimizers/
 # optim = optimizers.Adam()
-# Compile le modele
-# model.compile(loss=loss, optimizer=optim, metrics=['mse']) # pour visualisation
+# # Compile le modele
+# model.compile(loss=loss,
+#               optimizer=optim,
+#               metrics=['mse']) # pour visualisation
 
-# Entrainement
-# TODO: jouer avec nombre d'epochs, batch_size
+# # Entrainement
+# # TODO: jouer avec nombre d'epochs, batch_size
+
 # epochs = 10 # nombre de pas de descente dans l'optimisation
 # batch_size = 128
 # out_train = model.fit(y_train_ext, x_train_ext,
@@ -198,10 +201,9 @@ def SNR(x_ref,x):
   
 # Append SNR output to a file to compare SNR of all models
 def Append(data, file_name, model_number):
-  f=open(file_name, "a+")
+  f=open(file_name, "w")
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
-Append(SNR(x_test,np.squeeze(predictions)), 'SNR.txt', 1)
-
+Append(SNR(x_test, np.squeeze(predictions)), 'SNR.txt', 1)
   

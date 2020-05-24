@@ -141,8 +141,7 @@ y_test_ext = np.expand_dims(y_test,3)
 
 # model.save('model1.h5')  # Pour enregistrer le réseau model
 
-model = load_model('model1.h5') # Pour charger le réseau model
-
+model = load_model('model1.h5') # Pour charger le réseau mod
 # DONE: evaluer le réseau sur la partie test du jeu de données (pourquoi jamais sur le train?), 
 # utiliser la fonction 'predict' pour faire obtenir la sortie du réseau de neurone (model.predict)
 predictions = model.predict(y_test_ext)
