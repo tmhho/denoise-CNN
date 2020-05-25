@@ -38,7 +38,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 # Degradation
 
-sigma_noise = 30
+sigma_noise = 90
 sigma_flou = 2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
 
 # ### Choisir entre l'ajout de bruit et l'ajout de flou

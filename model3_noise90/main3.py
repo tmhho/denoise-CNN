@@ -38,7 +38,7 @@ os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 # Degradation
 
-sigma_noise = 30
+sigma_noise = 90
 sigma_flou = 2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
 
 # ### Choisir entre l'ajout de bruit et l'ajout de flou
@@ -60,12 +60,12 @@ sigma_flou = 2 # Le flou va s'etaler sur environ 3*sigma_flou pixels
 #     y_test[k]=np.fft.ifft2(np.fft.fft2(x_test[k])*Ghat)+sigma_noise*np.random.randn(n1,n2) 
 
 # Inpainting
-#tmp = x_train.copy()
-#tmp[:,10:20,:]=0
-#y_train = tmp + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
-#tmp = x_test.copy()
-#tmp[:,10:20,:]=0
-#y_test = tmp + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
+# tmp = x_train.copy()
+# tmp[:,10:20,:]=0
+# y_train = tmp + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1],x_train.shape[2]) 
+# tmp = x_test.copy()
+# tmp[:,10:20,:]=0
+# y_test = tmp + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
 
 # On ajoute du bruit gaussien
 
@@ -99,8 +99,10 @@ def model_simple():
 # Version visuelle des convolutions! http://cs231n.github.io/assets/conv-demo/index.html
   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(init) 
   x = MaxPooling2D((2, 2))(x)
+  x = Dropout(0.5)(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x) 
   x = MaxPooling2D((2, 2))(x)
+  x = Dropout(0.5)(x)
   x = Convolution2D(64, (3, 3), activation='relu', padding='same')(x)
   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
   #x = UpSampling2D()(x)
@@ -111,6 +113,7 @@ def model_simple():
   x = Convolution2D(1, (3, 3), activation='relu', padding='same')(x) # permet d'avoir une image noir et blanc en sortie
 
 #   # Autres fonctions potentiellement utiles:
+#   #x = UpSampling2D()(x)
 #   # x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
 #   # x = concatenate([x1, x2])
 #   # x = Dropout(0.5)(x)
@@ -153,10 +156,6 @@ score = model.evaluate(y_test_ext, x_test_ext, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
 
-#Save info of this model
-#f=open("model2_info.txt", "w")
-#f.write("Model 2: Convo + Maxpooling + ConvoTranspose => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
-#f.close()
 
 with open('model2.txt','w') as fh:
     # Pass the file handle in as a lambda function to make it callable
@@ -207,5 +206,3 @@ def Append(data, file_name, model_number):
   f.close()
   
 Append(SNR(x_test, np.squeeze(predictions)), 'SNR.txt', 2)
-
-  

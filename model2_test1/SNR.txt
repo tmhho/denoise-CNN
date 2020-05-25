@@ -1,1 +1,1 @@
-Signal to Noise ratio of model 2 is : 9.655994 Signal to Noise ratio of model 2 is : 9.652237 
+Signal to Noise ratio of model 2 is : 15.832562 
