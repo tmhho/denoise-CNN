@@ -74,18 +74,18 @@ y_train = x_train + sigma_noise*np.random.randn(x_train.shape[0],x_train.shape[1
 y_test = x_test + sigma_noise*np.random.randn(x_test.shape[0],x_test.shape[1],x_test.shape[2]) 
 
 # Afficher quelques images
-# fig = plt.figure(1)
-# col = 10 #Number of colmuns
-# for i in range(1, col+1):
-#   # Number of rows = 2
-#   # Position = i 
-#   fig.add_subplot(2, col, i)
-#   plt.imshow(x_train[i],interpolation='nearest')
-#   # Position = i+ col 
-#   fig.add_subplot(2, col, i+col)
-#   plt.imshow(y_train[i],interpolation='nearest')
-# #plt.show()
-# plt.savefig('fig_1.png')
+fig = plt.figure(1)
+col = 10 #Number of colmuns
+for i in range(1, col+1):
+  # Number of rows = 2
+  # Position = i 
+  fig.add_subplot(2, col, i)
+  plt.imshow(x_train[i],interpolation='nearest')
+  # Position = i+ col 
+  fig.add_subplot(2, col, i+col)
+  plt.imshow(y_train[i],interpolation='nearest')
+#plt.show()
+plt.savefig('fig_1.png')
 
 # Mettre donnees en forme pour passer dans le réseau
 x_train_ext = np.expand_dims(x_train,3) # ajoute une dimension a x_train à la position 3
@@ -94,19 +94,19 @@ x_test_ext = np.expand_dims(x_test,3)
 y_test_ext = np.expand_dims(y_test,3) 
 
 # Roughly DONE: comprendre chaque fonctions
-# def model_simple():
-#   init = Input(shape=(None, None,1)) # une image noir et blanc de taille non détérminée
-# # Version visuelle des convolutions! http://cs231n.github.io/assets/conv-demo/index.html
-#   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(init) 
-#   x = MaxPooling2D((2, 2))(x)
-#   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x) 
-#   x = MaxPooling2D((2, 2))(x)
-#   x = Convolution2D(64, (3, 3), activation='relu', padding='same')(x)
-#   x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
-#   x = UpSampling2D()(x)
-#   x = Convolution2D(16, (3, 3), activation='relu', padding='same')(x)
-#   x = UpSampling2D()(x)
-#   x = Convolution2D(1, (3, 3), activation='relu', padding='same')(x) # permet d'avoir une image noir et blanc en sortie
+def model_simple():
+  init = Input(shape=(None, None,1)) # une image noir et blanc de taille non détérminée
+# Version visuelle des convolutions! http://cs231n.github.io/assets/conv-demo/index.html
+  x = Convolution2D(16, (3, 3), activation='relu', padding='same')(init) 
+  x = MaxPooling2D((2, 2))(x)
+  x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x) 
+  x = MaxPooling2D((2, 2))(x)
+  x = Convolution2D(64, (3, 3), activation='relu', padding='same')(x)
+  x = Convolution2D(32, (3, 3), activation='relu', padding='same')(x)
+  x = UpSampling2D()(x)
+  x = Convolution2D(16, (3, 3), activation='relu', padding='same')(x)
+  x = UpSampling2D()(x)
+  x = Convolution2D(1, (3, 3), activation='relu', padding='same')(x) # permet d'avoir une image noir et blanc en sortie
 
   # Autres fonctions potentiellement utiles:
   # x = Conv2DTranspose(128, (2, 2), strides=(2, 2), padding='same') (x)
@@ -114,81 +114,75 @@ y_test_ext = np.expand_dims(y_test,3)
   # x = Dropout(0.5)(x)
   # m1 = Add()([x1, x2])
 
-#   NN = Model(init, x)
-#   return NN
+  NN = Model(init, x)
+  return NN
 
-# model = model_simple() # charge le modele
-# model.summary() # affiche les proprietes du modele
+model = model_simple() # charge le modele
+model.summary() # affiche les proprietes du modele
 
 # autres fonctions cout existent: binary_crossentropy,... https://keras.io/losses/
-# loss = losses.mse
+loss = losses.mse
 # # autres techniques d'optimisation existent: sgd, adagrad,... https://keras.io/optimizers/
-# optim = optimizers.Adam()
+optim = optimizers.Adam()
 # # Compile le modele
-# #model.compile(loss=loss,
-#               optimizer=optim,
-#               metrics=['mse']) # pour visualisation
+model.compile(loss=loss,
+              optimizer=optim,
+              metrics=['mse']) # pour visualisation
 
 # # Entrainement
 # # TODO: jouer avec nombre d'epochs, batch_size
-# epochs = 10 # nombre de pas de descente dans l'optimisation
-# batch_size = 128
-# out_train = model.fit(y_train_ext, x_train_ext,
-#           batch_size=batch_size,
-#           epochs=epochs,
-#           verbose=1,
-#           validation_data=(y_test_ext, x_test_ext))
+epochs = 10 # nombre de pas de descente dans l'optimisation
+batch_size = 128
+out_train = model.fit(y_train_ext, x_train_ext,
+          batch_size=batch_size,
+          epochs=epochs,
+          verbose=1,
+          validation_data=(y_test_ext, x_test_ext))
 
-# model.save('model1.h5')  # Pour enregistrer le réseau model
+model.save('model1.h5')  # Pour enregistrer le réseau model
 
-model = load_model('model1.h5') # Pour charger le réseau mod
+# model = load_model('model1.h5') # Pour charger le réseau mod
 # DONE: evaluer le réseau sur la partie test du jeu de données (pourquoi jamais sur le train?), 
 # utiliser la fonction 'predict' pour faire obtenir la sortie du réseau de neurone (model.predict)
 predictions = model.predict(y_test_ext)
 
-# score = model.evaluate(y_test_ext, x_test_ext, verbose=0)
-# print('Test loss:', score[0])
-# print('Test accuracy:', score[1])
+score = model.evaluate(y_test_ext, x_test_ext, verbose=0)
+print('Test loss:', score[0])
+print('Test accuracy:', score[1])
 
-#Save info of this model
-#f=open("model1_info.txt", "w")
-#f.write(model.summary())
-#f.write("Model 1: Convo + Maxpooling + UpSampling => Test lost: %3f   Test accuracy: %3f " %(score[0],score[1]))
-#f.close()
+with open('model1.txt','w') as fh:
+    # Pass the file handle in as a lambda function to make it callable
+    model.summary(print_fn=lambda x: fh.write(x + '\n'))
 
-# with open('model1.txt','w') as fh:
-#     # Pass the file handle in as a lambda function to make it callable
-#     model.summary(print_fn=lambda x: fh.write(x + '\n'))
+loss_train = out_train.history['loss']
+loss_test = out_train.history['val_loss']
+mse_train = out_train.history['mse']
 
-# loss_train = out_train.history['loss']
-# loss_test = out_train.history['val_loss']
-# mse_train = out_train.history['mse']
-
-# plt.figure(2)
-# plt.plot(loss_train,label='training')
-# plt.plot(loss_test,label='validation')
-# plt.title('Loss')
-# plt.legend()
-# #plt.show()
-# plt.savefig('loss_1.png')
+plt.figure(2)
+plt.plot(loss_train,label='training')
+plt.plot(loss_test,label='validation')
+plt.title('Loss')
+plt.legend()
+#plt.show()
+plt.savefig('loss_1.png')
 
 # Afficher quelques images
 
 # DONE: afficher les resultats sur la meme figure comme au debut
-# fig = plt.figure(3)
-# col = 10
-# rows = 3
-# for i in range(1, col+1):
-#   # Position = i 
-#   fig.add_subplot(rows, col, i)
-#   plt.imshow(np.squeeze(predictions[i], axis=(2,)),interpolation='nearest')
-#   # Position = i+ col 
-#   fig.add_subplot(rows, col, i+col)
-#   plt.imshow(x_test[i],interpolation='nearest')
-#   fig.add_subplot(rows, col, i+2*col)
-#   plt.imshow(y_test[i],interpolation='nearest')
-# #plt.show()
-# plt.savefig('final_1.png')
+fig = plt.figure(3)
+col = 10
+rows = 3
+for i in range(1, col+1):
+  # Position = i 
+  fig.add_subplot(rows, col, i)
+  plt.imshow(np.squeeze(predictions[i], axis=(2,)),interpolation='nearest')
+  # Position = i+ col 
+  fig.add_subplot(rows, col, i+col)
+  plt.imshow(x_test[i],interpolation='nearest')
+  fig.add_subplot(rows, col, i+2*col)
+  plt.imshow(y_test[i],interpolation='nearest')
+#plt.show()
+plt.savefig('final_1.png')
 
 def SNR(x_ref,x):
   x_ref_vect = x_ref.flatten()
@@ -199,7 +193,7 @@ def SNR(x_ref,x):
   
 #Append SNR output to a file to compare SNR of all models
 def Append(data, file_name, model_number):
-  f=open(file_name, "a+")
+  f=open(file_name, "w")
   f.write("Signal to Noise ratio of model %d is : %3f " %(model_number,data))
   f.close()
   
